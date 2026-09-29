@@ -1,0 +1,59 @@
+name: Commit Message Lint
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  validate-commits:
+    name: Validate commit messages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enforce exactly one commit per PR
+        run: |
+          COUNT=$(git rev-list --count "origin/${{ github.base_ref }}..HEAD")
+          echo "This PR contains $COUNT commit(s)."
+          if [ "$COUNT" -ne 1 ]; then
+            echo "::error::Each PR must contain exactly one commit. Please squash your commits into one."
+            exit 1
+          fi
+
+      - name: Validate commit message format
+        run: |
+          # Required format: fix: #XXX, <meaningful message>
+          PATTERN='^fix: #[0-9]+, .+'
+
+          FAILED=0
+          while IFS= read -r sha; do
+            SUBJECT=$(git log -1 --format=%s "$sha")
+            echo "Checking: $SUBJECT"
+
+            if ! echo "$SUBJECT" | grep -Pq "$PATTERN"; then
+              echo "::error::Invalid commit message: \"$SUBJECT\""
+              echo "::error::Expected format: 'fix: #XXX, <message>' (e.g. 'fix: #12, correct the broken formula')"
+              FAILED=1
+              continue
+            fi
+
+            # Reject vague / meaningless messages after the issue reference.
+            MESSAGE=$(echo "$SUBJECT" | sed -E 's/^fix: #[0-9]+, //')
+            TRIMMED=$(echo "$MESSAGE" | tr '[:upper:]' '[:lower:]' | xargs)
+            case "$TRIMMED" in
+              ""|"wip"|"update"|"updates"|"update notes"|"fix"|"fix stuff"|"asdf"|"fixed"|"changes"|"change")
+                echo "::error::Commit message is not meaningful: \"$SUBJECT\""
+                FAILED=1
+                ;;
+            esac
+          done < <(git rev-list "origin/${{ github.base_ref }}..HEAD")
+
+          if [ "$FAILED" -ne 0 ]; then
+            echo "::error::One or more commit messages do not follow the contribution guide. See CONTRIBUTING.md."
+            exit 1
+          fi
+
+          echo "All commit messages are valid."
