@@ -17,7 +17,7 @@ Each binary digit (bit) represents a power of 2:
 0010 = 2
 0100 = 4
 1000 = 8
-1010 = 12
+1010 = 10
 1111 = 15
 ```
 

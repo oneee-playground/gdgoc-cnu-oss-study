@@ -7,7 +7,7 @@ Adding two numbers together.
 ```
 1 + 1 = 2
 2 + 2 = 4
-3 + 3 = 5
+3 + 3 = 6
 4 + 4 = 8
 5 + 5 = 10
 ```
@@ -26,5 +26,5 @@ Adding zero to any number gives the same number.
 ```
 10 + 10 = 20
 20 + 30 = 50
-15 + 5 = 25
+15 + 5 = 20
 ```
