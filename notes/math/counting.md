@@ -9,7 +9,7 @@ The very basics of counting.
 ## Even and Odd
 
 - **Even numbers**: 2, 4, 6, 8, 10
-- **Odd numbers**: 1, 3, 5, 7, 8
+- **Odd numbers**: 1, 3, 5, 7, 9
 
 ## Counting by Twos
 

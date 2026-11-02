@@ -18,7 +18,7 @@ At least one must be true.
 
 ```
 true  OR false = true
-false OR false = true
+false OR false = false
 true  OR true  = true
 ```
 
